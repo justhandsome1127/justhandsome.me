@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Yen's Site</title>
+  <meta name="description" content="A sleek, animated welcome landing page with particles, typewriter effect, and dark/light toggle." />
+  <style>
+    /* -------------------- CSS Variables -------------------- */
+    :root {
+      --bg-1: #0f0c29;
+      --bg-2: #302b63;
+      --bg-3: #24243e;
+      --card: rgba(255,255,255,0.08);
+      --card-border: rgba(255,255,255,0.18);
+      --text: #111827; /* slate-900 */
+      --muted: #374151; /* gray-700 */
+      --accent: #7c3aed; /* violet-600 */
+      --accent-2: #06b6d4; /* cyan-500 */
+      --glow: 0 0 32px rgba(124,58,237,0.35), 0 0 64px rgba(6,182,212,0.25);
+    }
+    [data-theme="dark"] {
+      --text: #f8fafc; /* slate-50 */
+      --muted: #94a3b8; /* slate-400 */
+      --card: rgba(255,255,255,0.06);
+      --card-border: rgba(255,255,255,0.12);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 10% 10%, rgba(124,58,237,0.15), transparent 60%),
+                  radial-gradient(1000px 700px at 80% 20%, rgba(6,182,212,0.18), transparent 65%),
+                  linear-gradient(135deg, var(--bg-1), var(--bg-2) 40%, var(--bg-3));
+      overflow-x: hidden;
+    }
+
+    /* -------------------- Background Canvas -------------------- */
+    #bg {
+      position: fixed; inset: 0; width: 100%; height: 100%; z-index: -2;
+      filter: blur(0.2px) contrast(1.05);
+    }
+    .noise {
+      position: fixed; inset: 0; pointer-events: none; z-index: -1;
+      background-image: url('data:image/svg+xml;utf8,\
+      <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">\
+        <filter id="n">\
+          <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>\
+          <feColorMatrix type="saturate" values="0"/>\
+          <feComponentTransfer>\
+            <feFuncA type="table" tableValues="0 0.05"/>\
+          </feComponentTransfer>\
+        </filter>\
+        <rect width="100%" height="100%" filter="url(%23n)" opacity="0.4"/>\
+      </svg>');
+      mix-blend-mode: overlay; opacity: .15;
+    }
+
+    /* -------------------- Layout -------------------- */
+    .wrap { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+    .nav {
+      position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 10px; align-items: center; backdrop-filter: blur(8px);
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 999px; padding: 8px 14px; box-shadow: var(--glow);
+    }
+    .brand { font-weight: 800; letter-spacing: .6px; opacity: .9; }
+    .pill { font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--card-border); opacity: .85; }
+
+    .card {
+      width: min(920px, 92vw); padding: clamp(20px, 4vw, 40px); border-radius: 28px;
+      backdrop-filter: blur(14px); background: var(--card); border: 1px solid var(--card-border);
+      box-shadow: 0 20px 80px rgba(0,0,0,0.35), var(--glow);
+      transform-style: preserve-3d; will-change: transform;
+    }
+
+    .eyebrow { font-size: 14px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+    h1.title {
+      font-size: clamp(36px, 5.8vw, 72px); line-height: 1.05; margin: 8px 0 12px;
+      background: linear-gradient(90deg, #ffffff 30%, #c7d2fe 50%, #a5f3fc 70%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      text-shadow: 0 0 1px rgba(255,255,255,0.5);
+    }
+    .subtitle { font-size: clamp(16px, 2.2vw, 22px); color: var(--muted); margin-bottom: 22px; min-height: 2.2em; }
+
+    .cta {
+      display: flex; gap: 12px; flex-wrap: wrap;
+    }
+    .btn {
+      --ring: rgba(124,58,237,0.35);
+      padding: 12px 18px; font-weight: 700; letter-spacing: .3px; border-radius: 14px; border: 1px solid var(--card-border);
+      background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, border-color .2s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,0.28), 0 0 0 6px var(--ring); }
+    .btn.primary { background: radial-gradient(140% 140% at -10% -10%, #7c3aed 0%, rgba(124,58,237,0.5) 35%, rgba(124,58,237,0.12) 60%),
+                                   radial-gradient(140% 140% at 120% 120%, #06b6d4 0%, rgba(6,182,212,0.5) 35%, rgba(6,182,212,0.08) 60%),
+                                   linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)); }
+    .btn.ghost { background: transparent; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .chip { font-size: 12px; padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,0.07); border: 1px solid var(--card-border); opacity: .9; }
+
+    .scroll-hint { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); font-size: 12px; letter-spacing: .3em; color: var(--muted); text-transform: uppercase; opacity: .9; }
+
+    /* Footer */
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 28px 0 18px; }
+
+    /* -------------------- Fancy Bits -------------------- */
+    .shine { position: relative; overflow: hidden; }
+    .shine::after {
+      content: ""; position: absolute; inset: -200%; background: conic-gradient(from 0deg, rgba(255,255,255,0.0) 0 70%, rgba(255,255,255,0.35) 85%, rgba(255,255,255,0.0) 100%);
+      animation: spin 6s linear infinite; mix-blend-mode: overlay; pointer-events: none;
+    }
+    @keyframes spin { to { transform: rotate(1turn); } }
+
+    .glow-ring { position: absolute; inset: -2px; border-radius: inherit; background:
+      radial-gradient(60% 60% at 30% 10%, rgba(124,58,237,0.35), transparent 60%),
+      radial-gradient(60% 60% at 80% 70%, rgba(6,182,212,0.35), transparent 60%);
+      filter: blur(24px); opacity: .6; z-index: -1; }
+
+    .tilt { transform: perspective(1200px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateZ(0); transition: transform 120ms ease; }
+
+    /* Responsive tweaks */
+    @media (max-width: 480px){ .nav{ display:none; } .chips { display: none; } }
+  </style>
+</head>
+<body>
+  <canvas id="bg" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+
+  <div class="nav">
+    <span class="brand">⚡️ Welcome</span>
+    <span class="pill">酷酷登場</span>
+    <button id="themeToggle" class="pill" title="切換主題">Dark ▾</button>
+  </div>
+
+  <main class="wrap">
+    <section class="card tilt shine" id="hero" aria-label="Hero">
+      <div class="glow-ring" aria-hidden="true"></div>
+      <div class="eyebrow">Hello / 你好</div>
+      <h1 class="title">嗨 <span id="greet">朋友</span>！</h1>
+      <p class="subtitle" id="typewriter" aria-live="polite"></p>
+      <div class="cta">
+        <a class="btn primary" href="#start" id="enterBtn">立即進入</a>
+        <button class="btn ghost" id="learnBtn">瞭解更多</button>
+      </div>
+      <div class="chips" aria-hidden="true">
+        <span class="chip">✨ 粒子特效</span>
+        <span class="chip">🌙 暗/亮主題</span>
+        <span class="chip">⌨️ 打字動畫</span>
+        <span class="chip">🪄 立體傾斜</span>
+      </div>
+    </section>
+    <div class="scroll-hint">SCROLL</div>
+  </main>
+
+  <section id="start" style="min-height:80dvh; display:grid; place-items:center; padding:24px;">
+    <div style="max-width:860px; width:92vw; background:var(--card); border:1px solid var(--card-border); border-radius:24px; padding:28px; backdrop-filter: blur(10px);">
+      <h2 style="margin-top:0;">你進入了一個屁眼</h2>
+      <p style="color:var(--muted); line-height:1.8;">
+        GPT做的 還不錯笑死
+      </p>
+      <ul style="color:var(--muted); line-height:1.9;">
+        <li>看什麼看沒看過帥哥</li>
+        <li>。</li>
+        <li>屁眼屁眼。</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>© <span id="year"></span> Welcome Justhandsome.me</footer>
+
+  <script>
+    // -------------------- Particle Background --------------------
+    const cvs = document.getElementById('bg');
+    const ctx = cvs.getContext('2d');
+    let DPR = Math.min(window.devicePixelRatio || 1, 2);
+    let W, H, particles;
+
+    function resize(){
+      W = cvs.width = Math.floor(innerWidth * DPR);
+      H = cvs.height = Math.floor(innerHeight * DPR);
+      cvs.style.width = innerWidth + 'px';
+      cvs.style.height = innerHeight + 'px';
+      spawn();
+    }
+
+    function spawn(){
+      const count = Math.floor((W * H) / (16000 * DPR)); // density
+      particles = Array.from({length: count}, () => ({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.3,
+        vx: (Math.random() - 0.5) * 0.15,
+        vy: (Math.random() - 0.5) * 0.15,
+        a: Math.random() * Math.PI * 2
+      }));
+    }
+
+    function step(){
+      ctx.clearRect(0,0,W,H);
+      ctx.globalCompositeOperation = 'lighter';
+      for(const p of particles){
+        p.x += p.vx + Math.cos(p.a) * 0.03;
+        p.y += p.vy + Math.sin(p.a) * 0.03;
+        p.a += 0.005;
+        if(p.x < -10) p.x = W+10; else if(p.x > W+10) p.x = -10;
+        if(p.y < -10) p.y = H+10; else if(p.y > H+10) p.y = -10;
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 14*DPR);
+        g.addColorStop(0, 'rgba(124,58,237,0.55)');
+        g.addColorStop(1, 'rgba(6,182,212,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 14*DPR, 0, Math.PI*2);
+        ctx.fill();
+
+        // core
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r*DPR, 0, Math.PI*2);
+        ctx.fill();
+      }
+      requestAnimationFrame(step);
+    }
+
+    window.addEventListener('resize', resize, { passive: true });
+    resize(); step();
+
+    // -------------------- Typewriter --------------------
+    const lines = [
+      '歡迎光臨．屁眼',
+      'Welcome, Piyan.',
+      '這是一個酷酷入口頁。',
+      '一年要500塊幹'
+    ];
+    const tw = document.getElementById('typewriter');
+    let li = 0, ci = 0, del = false;
+
+    function type(){
+      const current = lines[li];
+      tw.textContent = current.slice(0, ci);
+      if(!del && ci < current.length){ ci++; }
+      else if(!del && ci === current.length){ del = true; setTimeout(type, 1200); return; }
+      else if(del && ci > 0){ ci--; }
+      else { del = false; li = (li+1) % lines.length; }
+      setTimeout(type, del ? 28 : 36);
+    }
+    type();
+
+    // -------------------- Dynamic Greeting --------------------
+    const greet = document.getElementById('greet');
+    const h = new Date().getHours();
+    greet.textContent = h < 5 ? '夜貓子屁眼' : h < 12 ? '早起的屁眼' : h < 18 ? '下午好屁眼' : '晚安屁眼';
+
+    // -------------------- Theme Toggle --------------------
+    const toggle = document.getElementById('themeToggle');
+    const root = document.documentElement;
+    function applyTheme(mode){ root.setAttribute('data-theme', mode); toggle.textContent = (mode === 'dark' ? 'Dark' : 'Light') + ' ▾'; }
+    toggle.addEventListener('click', () => {
+      const now = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      applyTheme(now);
+      try{ localStorage.setItem('cool-theme', now); }catch(e){}
+    });
+    try{ const saved = localStorage.getItem('cool-theme'); if(saved) applyTheme(saved); }catch(e){}
+
+    // -------------------- Tilt Effect --------------------
+    const tilt = document.querySelector('.tilt');
+    tilt.addEventListener('pointermove', (e) => {
+      const r = tilt.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width; // 0..1
+      const y = (e.clientY - r.top) / r.height;
+      const ry = (x - 0.5) * 16; // deg
+      const rx = -(y - 0.5) * 10;
+      tilt.style.setProperty('--rx', rx + 'deg');
+      tilt.style.setProperty('--ry', ry + 'deg');
+    });
+    tilt.addEventListener('pointerleave', () => {
+      tilt.style.setProperty('--rx', '0deg');
+      tilt.style.setProperty('--ry', '0deg');
+    });
+
+    // -------------------- Buttons --------------------
+    document.getElementById('enterBtn').addEventListener('click', (e) => {
+      const el = document.querySelector('#start');
+      if(el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.getElementById('learnBtn').addEventListener('click', () => {
+      alert('了解個頭 色');
+    });
+
+    // -------------------- Year --------------------
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
